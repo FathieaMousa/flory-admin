@@ -21,6 +21,7 @@ class BannerController extends Controller
 
     public function store(Request $request)
     {
+
         $data = $request->validate([
             'title' => 'nullable|string|max:255',
             'image' => 'required|image|max:2048',

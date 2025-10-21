@@ -8,20 +8,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Address extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'customer_id', 'city', 'region', 'address', 'is_default'
+        'customer_id',
+        'name',
+        'phone',
+        'street',
+        'city',
+        'state',
+        'postal_code',
+        'country',
+        'selected',
     ];
 
-    protected $casts = ['is_default' => 'boolean'];
-
+    // ✔ كل عنوان تابع لعميل معيّن
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
-    
-    public function scopeDefault($query)
-{
-    return $query->where('is_default', true);
-}
 
 }

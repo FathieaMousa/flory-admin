@@ -8,15 +8,16 @@ use Illuminate\Http\Request;
 class Authenticate extends Middleware
 {
     /**
-     * إعادة التوجيه إذا المستخدم غير مسجّل الدخول
+     * يحدد ما يجب فعله إذا المستخدم غير مصدّق (لم يسجل الدخول)
      */
     protected function redirectTo(Request $request): ?string
     {
-        // ✅ لو الطلب مش JSON، رجعه لصفحة الأدمن
+        // ✅ إذا الطلب ليس من نوع JSON (أي من الويب)
         if (! $request->expectsJson()) {
             return route('admin.login');
         }
 
+        // ✅ إذا الطلب من API (مثل Postman أو Flutter)
         return null;
     }
 }
