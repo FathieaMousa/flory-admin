@@ -5,12 +5,12 @@
 @section('content')
 
 <div class="card shadow-sm">
-    <div class="card-header bg-light">
+    <div class="card-header d-flex justify-content-between align-items-center bg-light">
         <h5 class="mb-0">Customers List</h5>
     </div>
 
-    <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
+    <div class="card-body">
+        <table class="table table-bordered text-center align-middle">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -34,10 +34,10 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                            <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-sm btn-primary">View</a>
                             <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger"
+                                <button class="btn btn-sm btn-danger"
                                         onclick="return confirm('Are you sure you want to delete this customer?')">
                                     Delete
                                 </button>

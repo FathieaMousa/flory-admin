@@ -10,93 +10,98 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * 🎯 AuthApiController
- * هذا الكلاس مسؤول عن تسجيل العملاء وتسجيل الدخول عبر الـ API
- * - register(): إنشاء حساب جديد
- * - login(): تسجيل الدخول وإرجاع Token
- * - profile(): جلب بيانات المستخدم المسجل حالياً
+ * This class handles customer authentication and registration via API.
+ * - register(): Create a new account.
+ * - login(): Login and return a token.
+ * - profile(): Get the currently logged-in user data.
  */
 class AuthApiController extends Controller
 {
     /**
-     * 🧩 إنشاء حساب جديد (Register)
+     * 🧩 Register a new customer account
      */
-    public function register(Request $request)
-    {
-        // ✅ التحقق من البيانات المُدخلة
-        $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:customers,email',
-            'password' => 'required|min:6',
-        ]);
+ /**
+ * 🧩 Register a new customer account
+ */
+public function register(Request $request)
+{
+    // ✅ Validate input
+    $data = $request->validate([
+        'name'     => 'required|string|max:255',
+        'email'    => 'required|email|unique:customers,email',
+        'password' => 'required|min:6',
+        'phone'    => 'nullable|string|max:20', // 🆕 أضفنا الهاتف
+    ]);
 
-        // 🧠 إنشاء حساب جديد في جدول customers مع تشفير كلمة المرور
-        $customer = Customer::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+    // 🧠 Create new customer with hashed password
+    $customer = Customer::create([
+        'name'     => $data['name'],
+        'email'    => $data['email'],
+        'password' => Hash::make($data['password']),
+        'phone'    => $data['phone'] ?? null, // 🆕 أضفنا هذا السطر
+    ]);
 
-        // 🔐 إنشاء توكن (token) جديد باستخدام Sanctum
-        $token = $customer->createToken('flory_token')->plainTextToken;
+    // 🔐 Create Sanctum token
+    $token = $customer->createToken('flory_token')->plainTextToken;
 
-        // 📤 نرجع استجابة JSON تحتوي على بيانات المستخدم والتوكن
-        return response()->json([
-            'status'  => true,
-            'message' => 'تم إنشاء الحساب بنجاح ✅',
-            'user'    => $customer,
-            'token'   => $token,
-        ], 201);
-    }
+    // 📤 Return JSON response
+    return response()->json([
+        'status'  => true,
+        'message' => 'Account created successfully ✅',
+        'user'    => $customer,
+        'token'   => $token,
+    ], 201);
+}
 
     /**
-     * 🔑 تسجيل الدخول (Login)
+     * 🔑 Login (Authentication)
      */
     public function login(Request $request)
     {
-        // ✅ التحقق من صحة البيانات
+        // ✅ Validate the input data
         $data = $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
         ]);
 
-        // 🔍 البحث عن المستخدم
+        // 🔍 Search for the customer
         $customer = Customer::where('email', $data['email'])->first();
 
-        // ❌ في حال الإيميل أو الباسورد خطأ
+        // ❌ If email or password is incorrect
         if (! $customer || ! Hash::check($data['password'], $customer->password)) {
             throw ValidationException::withMessages([
-                'email' => ['البريد الإلكتروني أو كلمة المرور غير صحيحة. ❌'],
+                'email' => ['Invalid email or password ❌'],
             ]);
         }
 
-        // 🔄 إنشاء توكن جديد بعد تسجيل الدخول
+        // 🔄 Generate a new token after successful login
         $token = $customer->createToken('flory_token')->plainTextToken;
 
-        // ✅ إرجاع البيانات والتوكن
+        // ✅ Return the user and token
         return response()->json([
             'status'  => true,
-            'message' => 'تم تسجيل الدخول بنجاح ✅',
+            'message' => 'Logged in successfully ✅',
             'user'    => $customer,
             'token'   => $token,
         ]);
     }
 
     /**
-     * 👤 عرض ملف المستخدم الحالي (Profile)
-     * يتطلب Authorization: Bearer {token}
+     * 👤 Get current user profile
+     * Requires Authorization: Bearer {token}
      */
     public function profile(Request $request)
     {
         return response()->json([
             'status'  => true,
-            'message' => 'بيانات المستخدم الحالي ✅',
+            'message' => 'Current user data ✅',
             'user'    => $request->user(),
         ]);
     }
 
     /**
-     * 🚪 تسجيل الخروج (Logout)
-     * حذف جميع التوكنات الخاصة بالمستخدم
+     * 🚪 Logout
+     * Delete all user tokens
      */
     public function logout(Request $request)
     {
@@ -104,7 +109,54 @@ class AuthApiController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'تم تسجيل الخروج بنجاح 🚪',
+            'message' => 'Logged out successfully 🚪',
         ]);
     }
+
+
+        /**
+     * ✏️ Update current user profile
+     * Requires Authorization: Bearer {token}
+     */
+  /**
+ * ✏️ Update current user profile
+ * Requires Authorization: Bearer {token}
+ */
+public function updateProfile(Request $request)
+{
+    // 🧩 Validate the request data
+    $data = $request->validate([
+        'name'     => 'sometimes|string|max:255',
+        'email'    => 'sometimes|email|unique:customers,email,' . $request->user()->id,
+        'password' => 'nullable|min:6',
+        'phone'    => 'nullable|string|max:20', // 🆕 أضفنا رقم الجوال هنا
+        'image'    => 'nullable|image|max:2048', // Optional profile image
+    ]);
+
+    $customer = $request->user();
+
+    // 📸 Handle image upload (optional)
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('public/customers');
+        $data['image_url'] = asset(str_replace('public/', 'storage/', $path));
+    }
+
+    // 🔒 Hash the password if provided
+    if (!empty($data['password'])) {
+        $data['password'] = Hash::make($data['password']);
+    } else {
+        unset($data['password']); // prevent overwriting with null
+    }
+
+    // 🧠 Update user data (including phone now)
+    $customer->update($data);
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Profile updated successfully ✅',
+        'user'    => $customer,
+    ]);
+}
+
+
 }

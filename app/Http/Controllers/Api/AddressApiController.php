@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AddressApiController extends Controller
 {
-    // ✅ عرض عناوين المستخدم
+    // ✅ Display user's addresses
     public function index(Request $request)
     {
         return response()->json([
@@ -17,37 +17,46 @@ class AddressApiController extends Controller
         ]);
     }
 
-    // ✅ إضافة عنوان جديد
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
-            'street' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'postal_code' => 'nullable|string|max:50',
-            'country' => 'nullable|string|max:50',
-        ]);
+    // ✅ Add a new address
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'phone' => 'required|string|max:50',
+        'street' => 'required|string|max:255',
+        'city' => 'required|string|max:255',
+        'state' => 'nullable|string|max:255',
+        'postal_code' => 'nullable|string|max:50',
+        'country' => 'nullable|string|max:50',
+        'selected' => 'nullable|boolean', // ✅ أضف هذا
+    ]);
 
-        $data['customer_id'] = $request->user()->id;
+    $data['customer_id'] = $request->user()->id;
 
-        // إذا هذا العنوان هو الافتراضي
-        if ($request->has('selected') && $request->selected == true) {
-            Address::where('customer_id', $data['customer_id'])->update(['selected' => false]);
-            $data['selected'] = true;
-        }
-
-        $address = Address::create($data);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'تم إضافة العنوان ✅',
-            'address' => $address
-        ], 201);
+    // 🟢 إذا المستخدم ما عنده أي عنوان سابق → أول عنوان يكون افتراضي
+    if (!Address::where('customer_id', $data['customer_id'])->exists()) {
+        $data['selected'] = true;
     }
 
-    // ✅ تحديث عنوان
+    // 🟢 لو المستخدم اختار العنوان كافتراضي
+    if (!empty($data['selected']) && $data['selected'] == true) {
+        Address::where('customer_id', $data['customer_id'])->update(['selected' => false]);
+        $data['selected'] = true;
+    }
+
+    // ✅ الآن نحفظ العنوان فعلاً
+    $address = Address::create($data);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Address added successfully ✅',
+        'address' => $address
+    ], 201);
+}
+
+
+
+    // ✅ Update an existing address
     public function update(Request $request, $id)
     {
         $address = Address::where('customer_id', $request->user()->id)->findOrFail($id);
@@ -69,14 +78,21 @@ class AddressApiController extends Controller
 
         $address->update($data);
 
-        return response()->json(['status' => true, 'message' => 'تم تحديث العنوان ✅', 'address' => $address]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Address updated successfully ✏️',
+            'address' => $address
+        ]);
     }
 
-    // ✅ حذف عنوان
+    // ✅ Delete an address
     public function destroy(Request $request, $id)
     {
         Address::where('customer_id', $request->user()->id)->findOrFail($id)->delete();
 
-        return response()->json(['status' => true, 'message' => 'تم حذف العنوان 🗑️']);
+        return response()->json([
+            'status' => true,
+            'message' => 'Address deleted successfully 🗑️'
+        ]);
     }
 }

@@ -16,6 +16,7 @@
                 <tr>
                     <th>#</th>
                     <th>Customer</th>
+                    <th>Address</th> {{-- 🏠 العنوان --}}
                     <th>Status</th>
                     <th>Total</th>
                     <th>Payment</th>
@@ -28,9 +29,19 @@
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->customer->name ?? 'N/A' }}</td>
+
+                        {{-- 🏠 عرض العنوان --}}
                         <td>
-                            <span class="badge bg-info">{{ ucfirst($order->status) }}</span>
+                            @if($order->address)
+                                {{ $order->address->city ?? '-' }},
+                                {{ $order->address->street ?? '-' }}<br>
+                                <small class="text-muted">{{ $order->address->phone ?? '' }}</small>
+                            @else
+                                <span class="text-muted">No Address</span>
+                            @endif
                         </td>
+
+                        <td><span class="badge bg-info">{{ ucfirst($order->status) }}</span></td>
                         <td>${{ number_format($order->total, 2) }}</td>
                         <td>{{ $order->is_payment ? 'Paid' : 'Unpaid' }}</td>
                         <td>{{ $order->created_at->format('Y-m-d') }}</td>
@@ -43,7 +54,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-muted">No orders found.</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted">No orders found.</td></tr>
                 @endforelse
             </tbody>
         </table>

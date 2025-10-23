@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold">All Products</h4>
+    <h4 class="fw-bold">🛍️ All Products</h4>
     <a href="{{ route('products.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-1"></i> Add Product
     </a>
@@ -17,7 +17,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <table class="table table-hover align-middle">
+        <table class="table table-bordered text-center align-middle">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -53,20 +53,21 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil-square"></i>
+                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-primary">
+                            ✏ Edit
                         </a>
+
                         <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this product?')">
-                                <i class="bi bi-trash"></i>
+                                Delete
                             </button>
                         </form>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No products found.</td>
+                    <td colspan="8" class="text-center text-muted py-3">No products found.</td>
                 </tr>
                 @endforelse
             </tbody>

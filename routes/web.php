@@ -83,6 +83,7 @@ Route::prefix('orders')->group(function () {
 
 // ✅ إرسال إشعار للعميل
 Route::post('/customers/{id}/notify', [CustomerController::class, 'sendNotification'])->name('customers.notify');
+Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 // 👥 المستخدمين من Firebase
 Route::get('/firebase-users', [App\Http\Controllers\FirebaseUserController::class, 'index'])->name('firebase.users');
@@ -102,6 +103,8 @@ Route::get('/firebase-users', [App\Http\Controllers\FirebaseUserController::clas
     // ⚙️ إعدادات الموقع
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('settings/update', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.setDefault');
+
 
     // 👤 البروفايل
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -129,3 +132,4 @@ Route::resource('banners', BannerController::class)->except(['show']);
 | لا يجب وضع API داخل web.php لأن Laravel يستخدم حماية CSRF هنا.
 |--------------------------------------------------------------------------
 */
+

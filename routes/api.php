@@ -31,6 +31,8 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/profile', [AuthApiController::class, 'profile']);
         Route::post('/logout', [AuthApiController::class, 'logout']);
+        Route::post('/update-profile', [AuthApiController::class, 'updateProfile']);
+
     });
 });
 /* العنواين */
@@ -50,6 +52,8 @@ Route::get('/products/{id}', [ProductApiController::class, 'show']);
 
 /* 🏷️ التصنيفات */
 Route::get('/categories', [CategoryApiController::class, 'index']);
+Route::get('/categories/{id}', [CategoryApiController::class, 'show']);
+
 
 /* 📦 الطلبات (تتطلب تسجيل دخول) */
 Route::middleware('auth:sanctum')->group(function () {

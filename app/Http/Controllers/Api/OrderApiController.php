@@ -4,48 +4,84 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Address;
 use Illuminate\Http\Request;
 
 /**
- * 🎯 مسؤول عن الطلبات (Orders)
- * - عرض طلبات المستخدم
- * - إنشاء طلب جديد
+ * 🎯 Responsible for handling Orders (Orders)
+ * - Display user orders
+ * - Create new orders linked to saved addresses
  */
 class OrderApiController extends Controller
 {
-    // ✅ عرض الطلبات الخاصة بالمستخدم الحالي
+    /**
+     * ✅ Display all orders for the current logged-in user
+     */
     public function index(Request $request)
     {
-        return response()->json(
-            Order::where('customer_id', $request->user()->id)
-                ->with('items.product')
-                ->latest()
-                ->get()
-        );
+        $orders = Order::where('customer_id', $request->user()->id)
+            ->with(['items.product', 'address'])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Orders retrieved successfully ✅',
+            'orders'  => $orders
+        ]);
     }
 
-    // ✅ إنشاء طلب جديد
+    /**
+     * ✅ Create a new order linked to user's address
+     */
 public function store(Request $request)
 {
     $data = $request->validate([
-        'total' => 'required|numeric|min:0',
-        'items' => 'required|array',  // سيكون عندك items مثل المنتج + الكمية + السعر
-        'address' => 'nullable|string',
+        'total'      => 'required|numeric|min:0',
+        'items'      => 'required|array',
+        'address_id' => 'nullable|integer',
     ]);
 
-    // ✨ 1. إنشاء رقم طلب تلقائي (Unique)
+    // ✅ إذا المستخدم ما أرسل عنوان → استخدم الافتراضي
+    if (empty($data['address_id'])) {
+        $defaultAddress = $request->user()->addresses()->where('selected', true)->first();
+
+        if (!$defaultAddress) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Please add or select a default address first ❗'
+            ], 400);
+        }
+
+        $data['address_id'] = $defaultAddress->id;
+    }
+
+    // ✅ تحقق من أن العنوان يخص المستخدم
+    $address = $request->user()->addresses()->find($data['address_id']);
+    if (!$address) {
+        return response()->json([
+            'status'  => false,
+            'message' => 'Invalid address ❌'
+        ], 403);
+    }
+
+    // ✨ اجعل العنوان المختار هو الافتراضي
+    Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
+    $address->update(['selected' => true]);
+
+    // ✅ إنشاء رقم الطلب
     $orderNumber = 'ORD-' . strtoupper(uniqid());
 
-    // ✨ 2. إنشاء الطلب الأساسي
+    // ✅ إنشاء الطلب
     $order = Order::create([
-        'order_number' => $orderNumber,        // ✅ حل مشكلة قاعدة البيانات
+        'order_number' => $orderNumber,
         'customer_id'  => $request->user()->id,
+        'address_id'   => $data['address_id'],
         'status'       => 'pending',
         'total'        => $data['total'],
-        'address'      => $data['address'] ?? null,
     ]);
 
-    // ✨ 3. حفظ المنتجات التابعة للطلب (Order Items)
+    // ✅ إضافة المنتجات
     foreach ($data['items'] as $item) {
         $order->items()->create([
             'product_id' => $item['product_id'],
@@ -57,8 +93,14 @@ public function store(Request $request)
     return response()->json([
         'status'  => true,
         'message' => 'Order created successfully ✅',
-        'order'   => $order->load('items.product')   // يجيب الطلب مع المنتجات
+        'order'   => $order->load(['items.product', 'address'])
     ], 201);
+    // ✨ اجعل العنوان المختار هو الافتراضي فقط إذا لم يكن كذلك
+if (!$address->selected) {
+    Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
+    $address->update(['selected' => true]);
 }
+}
+
 
 }

@@ -15,4 +15,23 @@ class CategoryApiController extends Controller
     {
         return response()->json(Category::with('parent')->orderBy('name')->get());
     }
+
+    // ✅ عرض تصنيف محدد مع المنتجات التابعة له
+    public function show($id)
+    {
+        $category = Category::with(['parent', 'products'])->find($id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category not found ❌'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Category retrieved successfully ✅',
+            'data' => $category
+        ]);
+    }
 }

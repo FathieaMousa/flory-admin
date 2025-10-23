@@ -28,4 +28,19 @@ class AddressController extends Controller
         Address::findOrFail($id)->delete();
         return back()->with('success', 'Address deleted successfully ✅');
     }
+
+        // ✅ تعيين عنوان كافتراضي
+    public function setDefault($id)
+    {
+        $address = Address::findOrFail($id);
+
+        // الغاء الافتراضية عن باقي العناوين لنفس المستخدم
+        Address::where('customer_id', $address->customer_id)->update(['selected' => false]);
+
+        // تعيين الحالي كافتراضي
+        $address->update(['selected' => true]);
+
+        return back()->with('success', 'Default address updated successfully ✅');
+    }
+
 }

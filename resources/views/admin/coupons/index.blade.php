@@ -40,7 +40,7 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('coupons.edit', $coupon->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ route('coupons.edit', $coupon->id) }}" class="btn btn-primary btn-sm">✏ Edit</a>
                         <form action="{{ route('coupons.destroy', $coupon->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this coupon?')">Delete</button>
