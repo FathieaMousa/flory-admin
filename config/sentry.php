@@ -84,7 +84,7 @@ return [
     | user.
     |
     */
-    'user_context' => true,
+    // 'user_context' => true, // Commented out due to compatibility issues
 
     /*
     |--------------------------------------------------------------------------

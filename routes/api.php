@@ -9,7 +9,9 @@ use App\Http\Controllers\Api\{
     OrderApiController,
     CustomerApiController,
     CouponApiController,
-    NotificationApiController
+    NotificationApiController,
+    AddressApiController,
+    BannerApiController
 };
 
 /*
@@ -39,8 +41,6 @@ Route::prefix('auth')->group(function () {
     });
 });
 /* العنواين */
-
-use App\Http\Controllers\Api\AddressApiController;
 
 Route::middleware('firebase.auth')->prefix('addresses')->group(function () {
     Route::get('/', [AddressApiController::class, 'index']);      // عرض الكل
@@ -75,8 +75,6 @@ Route::middleware('firebase.auth')->group(function () {
     Route::get('/notifications', [NotificationApiController::class, 'index']);
     Route::post('/notifications/send', [NotificationApiController::class, 'send']);
 });
-
-use App\Http\Controllers\Api\BannerApiController;
 
 Route::get('/banners', [BannerApiController::class, 'index']);
 
