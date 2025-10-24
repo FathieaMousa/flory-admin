@@ -7,13 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Api\ProfileUpdateRequest;
+use App\Helpers\ApiResponse;
 
 /**
  * 🎯 AuthApiController
  * This class handles customer authentication and registration via API.
- * - register(): Create a new account.
- * - login(): Login and return a token.
- * - profile(): Get the currently logged-in user data.
+ * 
+ * @group Authentication
+ * 
+ * APIs for user authentication, registration, and profile management.
+ * All protected endpoints require Firebase authentication token.
  */
 class AuthApiController extends Controller
 {
@@ -30,27 +34,21 @@ public function register(Request $request)
         'name'     => 'required|string|max:255',
         'email'    => 'required|email|unique:customers,email',
         'password' => 'required|min:6',
-        'phone'    => 'nullable|string|max:20', // 🆕 أضفنا الهاتف
+        'phone'    => 'nullable|string|max:20',
+        'firebase_uid' => 'required|string|unique:customers,firebase_uid',
     ]);
 
-    // 🧠 Create new customer with hashed password
+    // 🧠 Create new customer with Firebase UID
     $customer = Customer::create([
         'name'     => $data['name'],
         'email'    => $data['email'],
         'password' => Hash::make($data['password']),
-        'phone'    => $data['phone'] ?? null, // 🆕 أضفنا هذا السطر
+        'phone'    => $data['phone'] ?? null,
+        'firebase_uid' => $data['firebase_uid'],
     ]);
 
-    // 🔐 Create Sanctum token
-    $token = $customer->createToken('flory_token')->plainTextToken;
-
     // 📤 Return JSON response
-    return response()->json([
-        'status'  => true,
-        'message' => 'Account created successfully ✅',
-        'user'    => $customer,
-        'token'   => $token,
-    ], 201);
+    return ApiResponse::created('Account created successfully', $customer);
 }
 
     /**
@@ -70,43 +68,74 @@ public function register(Request $request)
         // ❌ If email or password is incorrect
         if (! $customer || ! Hash::check($data['password'], $customer->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid email or password ❌'],
+                'email' => ['Invalid email or password'],
             ]);
         }
 
-        // 🔄 Generate a new token after successful login
-        $token = $customer->createToken('flory_token')->plainTextToken;
-
-        // ✅ Return the user and token
-        return response()->json([
-            'status'  => true,
-            'message' => 'Logged in successfully ✅',
-            'user'    => $customer,
-            'token'   => $token,
-        ]);
+        // ✅ Return the user data
+        return ApiResponse::success('Logged in successfully', $customer);
     }
 
     /**
-     * 👤 Get current user profile
-     * Requires Authorization: Bearer {token}
+     * Get Current User Profile
+     * 
+     * Retrieve the profile information of the currently authenticated user.
+     * This endpoint automatically creates a customer record if it doesn't exist
+     * based on the Firebase user data.
+     * 
+     * @authenticated
+     * 
+     * @response 200 {
+     *   "status": true,
+     *   "message": "Current user data ✅",
+     *   "user": {
+     *     "id": 1,
+     *     "name": "John Doe",
+     *     "email": "john@example.com",
+     *     "firebase_uid": "firebase-uid-123",
+     *     "phone": "+1234567890",
+     *     "email_verified_at": "2025-01-16T10:00:00.000000Z",
+     *     "created_at": "2025-01-16T10:00:00.000000Z",
+     *     "updated_at": "2025-01-16T10:00:00.000000Z"
+     *   }
+     * }
+     * 
+     * @response 401 {
+     *   "status": false,
+     *   "message": "Invalid or expired token"
+     * }
      */
     public function profile(Request $request)
     {
+        $firebaseUid = $request->get('firebase_uid');
+        $firebaseUser = $request->get('firebase_user');
+        
+        // Find or create customer based on Firebase UID
+        $customer = Customer::where('firebase_uid', $firebaseUid)->first();
+        
+        if (!$customer) {
+            // Create customer if doesn't exist
+            $customer = Customer::create([
+                'name' => $firebaseUser->claims()->get('name', ''),
+                'email' => $firebaseUser->claims()->get('email', ''),
+                'firebase_uid' => $firebaseUid,
+                'email_verified_at' => $firebaseUser->claims()->get('email_verified') ? now() : null,
+            ]);
+        }
+        
         return response()->json([
             'status'  => true,
             'message' => 'Current user data ✅',
-            'user'    => $request->user(),
+            'user'    => $customer,
         ]);
     }
 
     /**
      * 🚪 Logout
-     * Delete all user tokens
+     * Firebase handles logout on client side
      */
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-
         return response()->json([
             'status'  => true,
             'message' => 'Logged out successfully 🚪',
@@ -122,18 +151,12 @@ public function register(Request $request)
  * ✏️ Update current user profile
  * Requires Authorization: Bearer {token}
  */
-public function updateProfile(Request $request)
+public function updateProfile(ProfileUpdateRequest $request)
 {
-    // 🧩 Validate the request data
-    $data = $request->validate([
-        'name'     => 'sometimes|string|max:255',
-        'email'    => 'sometimes|email|unique:customers,email,' . $request->user()->id,
-        'password' => 'nullable|min:6',
-        'phone'    => 'nullable|string|max:20', // 🆕 أضفنا رقم الجوال هنا
-        'image'    => 'nullable|image|max:2048', // Optional profile image
-    ]);
+    $data = $request->validated();
 
-    $customer = $request->user();
+    $firebaseUid = $request->get('firebase_uid');
+    $customer = Customer::where('firebase_uid', $firebaseUid)->firstOrFail();
 
     // 📸 Handle image upload (optional)
     if ($request->hasFile('image')) {
@@ -141,21 +164,12 @@ public function updateProfile(Request $request)
         $data['image_url'] = asset(str_replace('public/', 'storage/', $path));
     }
 
-    // 🔒 Hash the password if provided
-    if (!empty($data['password'])) {
-        $data['password'] = Hash::make($data['password']);
-    } else {
-        unset($data['password']); // prevent overwriting with null
-    }
+    // Remove password field as Firebase handles authentication
 
     // 🧠 Update user data (including phone now)
     $customer->update($data);
 
-    return response()->json([
-        'status'  => true,
-        'message' => 'Profile updated successfully ✅',
-        'user'    => $customer,
-    ]);
+    return ApiResponse::success('Profile updated successfully', $customer);
 }
 
 

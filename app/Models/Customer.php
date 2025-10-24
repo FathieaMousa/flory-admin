@@ -15,6 +15,7 @@ class Customer extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'phone', 'password',
+        'firebase_uid', 'email_verified_at',
         'fcm_token', 'is_active', 'avatar',
         'last_login_at', 'city', 'region'
     ];
@@ -23,7 +24,8 @@ class Customer extends Authenticatable
 
     protected $casts = [
         'is_active' => 'boolean',
-        'last_login_at' => 'datetime'
+        'last_login_at' => 'datetime',
+        'email_verified_at' => 'datetime'
     ];
 
     public function addresses()

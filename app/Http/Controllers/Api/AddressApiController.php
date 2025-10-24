@@ -11,15 +11,36 @@ class AddressApiController extends Controller
     // ✅ Display user's addresses
     public function index(Request $request)
     {
+        $firebaseUid = $request->get('firebase_uid');
+        $customer = \App\Models\Customer::where('firebase_uid', $firebaseUid)->first();
+        
+        if (!$customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
         return response()->json([
             'status' => true,
-            'addresses' => $request->user()->addresses
+            'message' => 'Addresses retrieved successfully',
+            'data' => $customer->addresses
         ]);
     }
 
     // ✅ Add a new address
 public function store(Request $request)
 {
+    $firebaseUid = $request->get('firebase_uid');
+    $customer = \App\Models\Customer::where('firebase_uid', $firebaseUid)->first();
+    
+    if (!$customer) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Customer not found'
+        ], 404);
+    }
+
     $data = $request->validate([
         'name' => 'required|string|max:255',
         'phone' => 'required|string|max:50',
@@ -28,10 +49,10 @@ public function store(Request $request)
         'state' => 'nullable|string|max:255',
         'postal_code' => 'nullable|string|max:50',
         'country' => 'nullable|string|max:50',
-        'selected' => 'nullable|boolean', // ✅ أضف هذا
+        'selected' => 'nullable|boolean',
     ]);
 
-    $data['customer_id'] = $request->user()->id;
+    $data['customer_id'] = $customer->id;
 
     // 🟢 إذا المستخدم ما عنده أي عنوان سابق → أول عنوان يكون افتراضي
     if (!Address::where('customer_id', $data['customer_id'])->exists()) {
@@ -49,8 +70,8 @@ public function store(Request $request)
 
     return response()->json([
         'status' => true,
-        'message' => 'Address added successfully ✅',
-        'address' => $address
+        'message' => 'Address added successfully',
+        'data' => $address
     ], 201);
 }
 
@@ -59,7 +80,17 @@ public function store(Request $request)
     // ✅ Update an existing address
     public function update(Request $request, $id)
     {
-        $address = Address::where('customer_id', $request->user()->id)->findOrFail($id);
+        $firebaseUid = $request->get('firebase_uid');
+        $customer = \App\Models\Customer::where('firebase_uid', $firebaseUid)->first();
+        
+        if (!$customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        $address = Address::where('customer_id', $customer->id)->findOrFail($id);
 
         $data = $request->validate([
             'name' => 'string|max:255',
@@ -72,7 +103,7 @@ public function store(Request $request)
         ]);
 
         if ($request->has('selected') && $request->selected == true) {
-            Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
+            Address::where('customer_id', $customer->id)->update(['selected' => false]);
             $data['selected'] = true;
         }
 
@@ -80,19 +111,29 @@ public function store(Request $request)
 
         return response()->json([
             'status' => true,
-            'message' => 'Address updated successfully ✏️',
-            'address' => $address
+            'message' => 'Address updated successfully',
+            'data' => $address
         ]);
     }
 
     // ✅ Delete an address
     public function destroy(Request $request, $id)
     {
-        Address::where('customer_id', $request->user()->id)->findOrFail($id)->delete();
+        $firebaseUid = $request->get('firebase_uid');
+        $customer = \App\Models\Customer::where('firebase_uid', $firebaseUid)->first();
+        
+        if (!$customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        Address::where('customer_id', $customer->id)->findOrFail($id)->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Address deleted successfully 🗑️'
+            'message' => 'Address deleted successfully'
         ]);
     }
 }

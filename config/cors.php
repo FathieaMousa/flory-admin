@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:8000',
+        'http://localhost:3000',
+        'https://your-flutter-app-domain.com', // Update this for production
+    ],
 
     'allowed_origins_patterns' => [],
 
