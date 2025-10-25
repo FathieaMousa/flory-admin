@@ -7,11 +7,6 @@ use App\Models\Order;
 use App\Models\Address;
 use Illuminate\Http\Request;
 
-/**
- * 🎯 Responsible for handling Orders (Orders)
- * - Display user orders
- * - Create new orders linked to saved addresses
- */
 class OrderApiController extends Controller
 {
     /**
@@ -34,73 +29,104 @@ class OrderApiController extends Controller
     /**
      * ✅ Create a new order linked to user's address
      */
-public function store(Request $request)
-{
-    $data = $request->validate([
-        'total'      => 'required|numeric|min:0',
-        'items'      => 'required|array',
-        'address_id' => 'nullable|integer',
-    ]);
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'total'      => 'required|numeric|min:0',
+            'items'      => 'required|array',
+            'address_id' => 'nullable|integer',
+        ]);
 
-    // ✅ إذا المستخدم ما أرسل عنوان → استخدم الافتراضي
-    if (empty($data['address_id'])) {
-        $defaultAddress = $request->user()->addresses()->where('selected', true)->first();
+        // ✅ إذا المستخدم ما أرسل عنوان → استخدم الافتراضي
+        if (empty($data['address_id'])) {
+            $defaultAddress = $request->user()->addresses()->where('selected', true)->first();
 
-        if (!$defaultAddress) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Please add or select a default address first ❗'
-            ], 400);
+            if (!$defaultAddress) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Please add or select a default address first ❗'
+                ], 400);
+            }
+
+            $data['address_id'] = $defaultAddress->id;
         }
 
-        $data['address_id'] = $defaultAddress->id;
-    }
+        // ✅ تحقق من أن العنوان يخص المستخدم
+        $address = $request->user()->addresses()->find($data['address_id']);
+        if (!$address) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid address ❌'
+            ], 403);
+        }
 
-    // ✅ تحقق من أن العنوان يخص المستخدم
-    $address = $request->user()->addresses()->find($data['address_id']);
-    if (!$address) {
+        // ✨ اجعل العنوان المختار هو الافتراضي فقط إذا لم يكن كذلك
+        if (!$address->selected) {
+            Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
+            $address->update(['selected' => true]);
+        }
+
+        // ✅ إنشاء رقم الطلب
+        $orderNumber = 'ORD-' . strtoupper(uniqid());
+
+        // ✅ إنشاء الطلب
+        $order = Order::create([
+            'order_number' => $orderNumber,
+            'customer_id'  => $request->user()->id,
+            'address_id'   => $data['address_id'],
+            'status'       => 'pending',
+            'total'        => $data['total'],
+        ]);
+
+        // ✅ إضافة المنتجات
+        foreach ($data['items'] as $item) {
+            $order->items()->create([
+                'product_id' => $item['product_id'],
+                'qty'        => $item['quantity'],
+                'price'      => $item['price'],
+            ]);
+        }
+
         return response()->json([
-            'status'  => false,
-            'message' => 'Invalid address ❌'
-        ], 403);
+            'status'  => true,
+            'message' => 'Order created successfully ✅',
+            'order'   => $order->load(['items.product', 'address'])
+        ], 201);
     }
 
-    // ✨ اجعل العنوان المختار هو الافتراضي
-    Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
-    $address->update(['selected' => true]);
+    /**
+     * ✏️ Update order status or total
+     */
+    public function update(Request $request, $id)
+    {
+        $order = Order::where('customer_id', $request->user()->id)->findOrFail($id);
 
-    // ✅ إنشاء رقم الطلب
-    $orderNumber = 'ORD-' . strtoupper(uniqid());
+        $data = $request->validate([
+            'status' => 'nullable|string|in:pending,processing,shipped,delivered,cancelled',
+            'total'  => 'nullable|numeric|min:0'
+        ]);
 
-    // ✅ إنشاء الطلب
-    $order = Order::create([
-        'order_number' => $orderNumber,
-        'customer_id'  => $request->user()->id,
-        'address_id'   => $data['address_id'],
-        'status'       => 'pending',
-        'total'        => $data['total'],
-    ]);
+        $order->update($data);
 
-    // ✅ إضافة المنتجات
-    foreach ($data['items'] as $item) {
-        $order->items()->create([
-            'product_id' => $item['product_id'],
-            'qty'        => $item['quantity'],
-            'price'      => $item['price'],
+        return response()->json([
+            'status'  => true,
+            'message' => 'Order updated successfully ✏️',
+            'order'   => $order
         ]);
     }
 
-    return response()->json([
-        'status'  => true,
-        'message' => 'Order created successfully ✅',
-        'order'   => $order->load(['items.product', 'address'])
-    ], 201);
-    // ✨ اجعل العنوان المختار هو الافتراضي فقط إذا لم يكن كذلك
-if (!$address->selected) {
-    Address::where('customer_id', $request->user()->id)->update(['selected' => false]);
-    $address->update(['selected' => true]);
-}
-}
+    /**
+     * 🗑️ Delete order
+     */
+    public function destroy(Request $request, $id)
+    {
+        $order = Order::where('customer_id', $request->user()->id)->findOrFail($id);
 
+        $order->delete();
 
+        return response()->json([
+            'status'  => true,
+            'message' => 'Order deleted successfully 🗑️'
+        ]);
+    }
 }

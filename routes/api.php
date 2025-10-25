@@ -40,11 +40,13 @@ Route::prefix('auth')->group(function () {
 use App\Http\Controllers\Api\AddressApiController;
 
 Route::middleware('auth:sanctum')->prefix('addresses')->group(function () {
-    Route::get('/', [AddressApiController::class, 'index']);      // عرض الكل
-    Route::post('/', [AddressApiController::class, 'store']);     // إضافة جديد
-    Route::put('/{id}', [AddressApiController::class, 'update']); // تعديل
+    Route::get('/', [AddressApiController::class, 'index']);          // عرض كل العناوين
+    Route::post('/', [AddressApiController::class, 'store']);         // إضافة جديد
+    Route::put('/{id}', [AddressApiController::class, 'update']);     // تعديل
     Route::delete('/{id}', [AddressApiController::class, 'destroy']); // حذف
+    Route::post('/{id}/default', [AddressApiController::class, 'setDefault']); // تعيين كافتراضي
 });
+
 
 /* 🛍️ المنتجات */
 Route::get('/products', [ProductApiController::class, 'index']);
@@ -56,11 +58,21 @@ Route::get('/categories/{id}', [CategoryApiController::class, 'show']);
 
 
 /* 📦 الطلبات (تتطلب تسجيل دخول) */
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/orders', [OrderApiController::class, 'index']);
-    Route::post('/orders', [OrderApiController::class, 'store']);
-});
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    // 🧾 عرض جميع الطلبات للمستخدم الحالي
+    Route::get('/orders', [OrderApiController::class, 'index']);
+
+    // ➕ إنشاء طلب جديد
+    Route::post('/orders', [OrderApiController::class, 'store']);
+
+    // ✏️ تعديل الطلب (مثل تغيير الحالة أو المجموع)
+    Route::put('/orders/{id}', [OrderApiController::class, 'update']);
+
+    // 🗑️ حذف الطلب
+    Route::delete('/orders/{id}', [OrderApiController::class, 'destroy']);
+});
 /* 🎟️ الكوبونات */
 Route::get('/coupons', [CouponApiController::class, 'index']);
 Route::get('/coupons/{code}', [CouponApiController::class, 'validateCoupon']);
