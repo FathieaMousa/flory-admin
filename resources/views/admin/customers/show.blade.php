@@ -53,7 +53,7 @@
 
 <!-- 💬 إرسال إشعار -->
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-light">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Send Notification</h5>
     </div>
     <div class="card-body">
@@ -104,7 +104,7 @@
 
 <!-- 🧾 آخر الطلبات -->
 <div class="card shadow-sm">
-    <div class="card-header bg-light">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Recent Orders</h5>
     </div>
     <div class="card-body p-0">

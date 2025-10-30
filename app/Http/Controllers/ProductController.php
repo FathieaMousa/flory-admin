@@ -37,7 +37,7 @@ class ProductController extends Controller
         }
 
         Product::create($data);
-        return redirect()->route('products.index')->with('success', 'Product created successfully ✅');
+        return redirect()->route('products.index')->with('success', 'Product created successfully');
     }
 
     public function edit(Product $product)
@@ -63,7 +63,7 @@ class ProductController extends Controller
         }
 
         $product->update($data);
-        return redirect()->route('products.index')->with('success', 'Product updated successfully ✏️');
+        return redirect()->route('products.index')->with('success', 'Product updated successfully');
     }
 
     public function destroy(Product $product)
@@ -71,7 +71,7 @@ class ProductController extends Controller
         if ($product->image) Storage::disk('public')->delete($product->image);
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Product deleted 🗑️');
+        return redirect()->route('products.index')->with('success', 'Product deleted');
     }
 }
 

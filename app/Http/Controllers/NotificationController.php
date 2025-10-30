@@ -30,9 +30,6 @@ class NotificationController extends Controller
         return back()->with('success', 'Notification marked as read.');
     }
 
-    /**
-     * إرسال إشعار جديد (بالمستقبل عبر FCM)
-     */
     public function send(Request $request)
     {
         $data = $request->validate([
@@ -43,28 +40,12 @@ class NotificationController extends Controller
 
         $customer = Customer::find($data['customer_id']);
 
-        // حفظ الإشعار في قاعدة البيانات
         $notification = Notification::create([
             'customer_id' => $customer->id,
             'title' => $data['title'],
             'body' => $data['body'],
             'sent_at' => now(),
         ]);
-
-        // ✨ (لاحقاً): إرسال عبر FCM لما نربط Firebase Cloud Messaging
-        // if ($customer->fcm_token) {
-        //     Http::withHeaders([
-        //         'Authorization' => 'key=' . config('services.fcm.server_key'),
-        //         'Content-Type' => 'application/json',
-        //     ])->post('https://fcm.googleapis.com/fcm/send', [
-        //         'to' => $customer->fcm_token,
-        //         'notification' => [
-        //             'title' => $data['title'],
-        //             'body' => $data['body'],
-        //         ],
-        //     ]);
-        // }
-
         return back()->with('success', 'Notification created successfully!');
     }
 }

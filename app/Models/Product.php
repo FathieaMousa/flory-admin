@@ -17,20 +17,20 @@ class Product extends Model
         'is_available' => 'boolean',
         'is_new' => 'boolean',
     ];
+    
 
-    // 🔹 علاقة بالتصنيف
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // 🔹 علاقة بالصور
+
     public function images()
     {
         return $this->hasMany(ProductImage::class);
     }
 
-    // 🔹 عناصر الطلب التي تحتوي المنتج
+
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);

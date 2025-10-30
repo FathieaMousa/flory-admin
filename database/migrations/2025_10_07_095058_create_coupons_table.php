@@ -8,12 +8,12 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // كود الخصم (مثلاً FLORY10)
-            $table->enum('type', ['percentage', 'fixed'])->default('percentage'); // نسبة أو قيمة ثابتة
-            $table->decimal('value', 8, 2); // قيمة الخصم (مثلاً 10 = 10%)
-            $table->decimal('min_order_value', 10, 2)->nullable(); // حد أدنى للطلب
-            $table->integer('max_uses')->nullable(); // عدد مرات الاستخدام المسموح
-            $table->integer('used_count')->default(0); // عدد مرات الاستخدام الحالية
+            $table->string('code')->unique();
+            $table->enum('type', ['percentage', 'fixed'])->default('percentage');
+            $table->decimal('value', 8, 2);
+            $table->decimal('min_order_value', 10, 2)->nullable();
+            $table->integer('max_uses')->nullable();
+            $table->integer('used_count')->default(0);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->boolean('is_active')->default(true);

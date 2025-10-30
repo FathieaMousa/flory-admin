@@ -29,7 +29,6 @@
                         <td>{{ $address->street }}</td>
                         <td>{{ $address->phone }}</td>
 
-                        {{-- ✅ عرض حالة العنوان الافتراضي --}}
                         <td>
                             @if($address->selected)
                                 <span class="badge bg-success">Yes</span>
@@ -41,7 +40,6 @@
                         <td>
                             <a href="{{ route('addresses.show', $address->id) }}" class="btn btn-sm btn-primary">View</a>
 
-                            {{-- ✅ زر تعيين العنوان كافتراضي (فقط إن لم يكن افتراضي) --}}
                             @if(!$address->selected)
                                 <form action="{{ route('addresses.setDefault', $address->id) }}" method="POST" class="d-inline">
                                     @csrf

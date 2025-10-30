@@ -34,7 +34,6 @@ public function index(\Illuminate\Http\Request $request)
         return response()->json(['labels' => $labels, 'sales' => array_values($monthlySales)]);
     }
 
-    // باقي الإحصائيات
     $stats = [
         'products'  => \App\Models\Product::count(),
         'orders'    => \App\Models\Order::count(),

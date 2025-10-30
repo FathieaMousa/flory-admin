@@ -6,7 +6,6 @@
 @section('content')
 <div class="row g-4">
 
-    <!-- 🛍️ Products -->
     <div class="col-md-3 col-sm-6">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
@@ -16,7 +15,7 @@
         </div>
     </div>
 
-    <!-- 📦 Orders -->
+    <!-- order  -->
     <div class="col-md-3 col-sm-6">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
@@ -26,7 +25,7 @@
         </div>
     </div>
 
-    <!-- 👥 Customers -->
+    <!--  Customers -->
     <div class="col-md-3 col-sm-6">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
@@ -36,7 +35,7 @@
         </div>
     </div>
 
-    <!-- 💸 Sales -->
+    <!--  Sales -->
     <div class="col-md-3 col-sm-6">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
@@ -51,7 +50,7 @@
 
 <hr class="my-4">
 
-<!-- 🔔 Notifications -->
+<!-- Notifications -->
 <div class="card mb-4 shadow-sm">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Latest Notifications</h5>
@@ -67,7 +66,7 @@
 <hr class="my-4">
 
 <div class="row">
-    <!-- 📊 المبيعات الشهرية -->
+    <!-- المبيعات الشهرية -->
     <div class="col-lg-8">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -89,7 +88,7 @@
         </div>
     </div>
 
-    <!-- 🏆 أعلى المنتجات مبيعًا -->
+    <!-- أعلى المنتجات مبيعًا -->
     <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -111,7 +110,7 @@
     </div>
 </div>
 
-<!-- 🧾 آخر الطلبات -->
+<!-- آخر الطلبات -->
 <div class="card shadow-sm">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Recent Orders</h5>

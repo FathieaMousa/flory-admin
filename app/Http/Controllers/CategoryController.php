@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
     public function create()
     {
-        // نرسل قائمة التصنيفات لاختيار الأب
+
         $categories = Category::orderBy('name')->get();
         return view('admin.categories.create', compact('categories'));
     }
@@ -34,7 +34,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        // لا نعرض التصنيف نفسه كخيار للأب
+        
         $categories = Category::where('id', '!=', $category->id)->orderBy('name')->get();
         return view('admin.categories.edit', compact('category', 'categories'));
     }
@@ -46,7 +46,7 @@ class CategoryController extends Controller
             'parent_id' => [
                 'nullable',
                 'exists:categories,id',
-                Rule::notIn([$category->id]), // منع جعل الأب = نفسه
+                Rule::notIn([$category->id]),
             ],
         ]);
 

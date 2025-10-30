@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
-/**
- * 🎯 مسؤول عن الإشعارات الخاصة بالعملاء
- */
+
 class NotificationApiController extends Controller
 {
-    // ✅ عرض الإشعارات الخاصة بالعميل الحالي
     public function index(Request $request)
     {
         return response()->json(
@@ -19,7 +16,6 @@ class NotificationApiController extends Controller
         );
     }
 
-    // ✅ إرسال إشعار جديد (إضافة داخلية)
     public function send(Request $request)
     {
         $data = $request->validate([

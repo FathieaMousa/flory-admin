@@ -13,8 +13,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('address_id')->nullable();
 
             // حالات: Pending, Processing, Out for Delivery, Delivered
-$table->enum('status', ['Pending', 'Processing', 'Delivered', 'Cancelled'])->default('Pending');
-
+            $table->enum('status', ['Pending', 'Processing', 'Delivered', 'Cancelled'])->default('Pending');
             $table->boolean('is_payment')->default(false)->nullable();
             $table->string('payment_method')->nullable();
 

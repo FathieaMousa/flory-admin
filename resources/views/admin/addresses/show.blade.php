@@ -5,13 +5,12 @@
 
 @section('content')
 <div class="card shadow-sm">
-    <div class="card-header bg-light">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">📍 Address Information</h5>
     </div>
 
     <div class="card-body">
         <div class="row">
-            <!-- ✅ معلومات العميل -->
             <div class="col-md-6">
                 <h6 class="text-secondary">👤 Customer Info</h6>
                 <p><strong>Name:</strong> {{ $address->customer->name ?? 'N/A' }}</p>
@@ -19,7 +18,6 @@
                 <p><strong>Phone:</strong> {{ $address->phone ?? 'N/A' }}</p>
             </div>
 
-            <!-- ✅ تفاصيل العنوان -->
             <div class="col-md-6">
                 <h6 class="text-secondary">🏠 Address Details</h6>
                 <p><strong>Street:</strong> {{ $address->street }}</p>

@@ -16,7 +16,7 @@
                 <tr>
                     <th>#</th>
                     <th>Customer</th>
-                    <th>Address</th> {{-- 🏠 العنوان --}}
+                    <th>Address</th> {{-- العنوان --}}
                     <th>Status</th>
                     <th>Total</th>
                     <th>Payment</th>
@@ -30,7 +30,7 @@
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->customer->name ?? 'N/A' }}</td>
 
-                        {{-- 🏠 عرض العنوان --}}
+                        {{--  عرض العنوان --}}
                         <td>
                             @if($order->address)
                                 {{ $order->address->city ?? '-' }},

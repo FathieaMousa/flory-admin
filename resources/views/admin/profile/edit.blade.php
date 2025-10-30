@@ -24,7 +24,7 @@
                 @csrf
                 @method('PATCH')
 
-                <!-- ✅ صورة البروفايل -->
+                <!--صورة البروفايل -->
                 <div class="text-center mb-4">
                     <img
                         id="avatarPreview"
@@ -35,13 +35,13 @@
                         style="object-fit: cover; transition: 0.3s;">
                 </div>
 
-                <!-- ✅ الاسم -->
+                <!-- الاسم -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Admin Name</label>
                     <input type="text" name="name" value="{{ old('name', session('admin_name', 'Admin')) }}" class="form-control" required>
                 </div>
 
-                <!-- ✅ اختيار الصورة -->
+                <!-- اختيار الصورة -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Profile Image</label>
                     <input type="file" name="avatar" id="avatarInput" class="form-control" accept="image/*">
@@ -50,7 +50,7 @@
 
                 <hr class="my-4">
 
-                <!-- ✅ كلمة المرور -->
+                <!--كلمة المرور -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">New Password</label>
                     <input type="password" name="password" class="form-control" placeholder="Leave empty to keep current password">
@@ -61,7 +61,7 @@
                     <input type="password" name="password_confirmation" class="form-control">
                 </div>
 
-                <!-- ✅ زر الحفظ -->
+                <!-- زر الحفظ -->
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-lg px-5 text-white" style="background-color:#ee9ca7;">
                         <i class="bi bi-save me-2"></i> Save Changes
@@ -75,7 +75,7 @@
 
 @section('scripts')
 <script>
-    // ✅ عند اختيار صورة جديدة، يتم عرضها فورًا
+    // عند اختيار صورة جديدة، يتم عرضها فورًا
     document.getElementById('avatarInput').addEventListener('change', function (event) {
         const file = event.target.files[0];
         const preview = document.getElementById('avatarPreview');

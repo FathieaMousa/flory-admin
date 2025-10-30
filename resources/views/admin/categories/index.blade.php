@@ -36,7 +36,6 @@
                                 ✏ Edit
                             </a>
 
-                            {{-- 🔴 زر الحذف بنفس ستايل العناوين --}}
                             <form action="{{ route('categories.destroy', $cat->id) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this category?')">

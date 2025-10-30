@@ -21,7 +21,7 @@ class Address extends Model
         'selected',
     ];
 
-    // ✔ كل عنوان تابع لعميل معيّن
+    
     public function customer()
     {
         return $this->belongsTo(Customer::class);

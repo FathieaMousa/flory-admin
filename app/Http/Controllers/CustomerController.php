@@ -9,24 +9,20 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    // 📋 عرض جميع العملاء
     public function index()
     {
         $customers = Customer::latest()->get();
         return view('admin.customers.index', compact('customers'));
     }
 
-    // 👤 عرض تفاصيل عميل محدد
     public function show($id)
     {
         $customer = Customer::with(['orders.items.product'])->findOrFail($id);
 
-        // 🧾 إحصائيات العميل
         $totalOrders = $customer->orders->count();
         $totalSpent  = $customer->orders->sum('total');
         $lastOrders  = $customer->orders()->latest()->take(5)->get();
 
-        // 🔔 إشعارات العميل
         $notifications = Notification::where('customer_id', $customer->id)
             ->latest()->take(10)->get();
 
@@ -39,7 +35,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    // 💬 حفظ إشعار داخلي للعميل
     public function sendNotification(Request $request, $id)
     {
         $request->validate([
@@ -57,10 +52,9 @@ class CustomerController extends Controller
             'sent_at'     => now(),
         ]);
 
-        return back()->with('success', 'Notification saved successfully ✅');
+        return back()->with('success', 'Notification saved successfully');
     }
 
-    // ❌ حذف عميل
     public function destroy($id)
     {
         Customer::findOrFail($id)->delete();

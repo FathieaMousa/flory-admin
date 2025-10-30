@@ -15,7 +15,7 @@ class Admin extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    // ✅ تأكّد أن الدالة داخل الكلاس، وليست بعد إغلاقه
+
     public function isAdmin(): bool
     {
         return ($this->role ?? '') === 'admin' || (bool) ($this->is_admin ?? false);

@@ -10,26 +10,18 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    /**
-     * عرض جميع المدراء
-     */
+
     public function index()
     {
         $admins = Admin::latest()->paginate(10);
         return view('admin.admins.index', compact('admins'));
     }
-
-    /**
-     * عرض صفحة إنشاء مدير جديد
-     */
     public function create()
     {
         return view('admin.admins.create');
     }
 
-    // حفظ بيانات الادمن
-
- public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -44,25 +36,16 @@ class AdminController extends Controller
             'role' => 'admin',
         ]);
 
-        // ✅ تسجيل الأدمن مباشرة
         Auth::guard('web')->login($admin);
-
-        // ✅ توجيهه للداشبورد
         return redirect()->route('dashboard')->with('success', 'Welcome, Admin!');
     }
 
-    /**
-     * صفحة تعديل بيانات المدير
-     */
     public function edit($id)
     {
         $admin = Admin::findOrFail($id);
         return view('admin.admins.edit', compact('admin'));
     }
 
-    /**
-     * تحديث بيانات المدير
-     */
     public function update(Request $request, $id)
     {
         $admin = Admin::findOrFail($id);
@@ -82,10 +65,6 @@ class AdminController extends Controller
         $admin->update($data);
         return redirect()->route('admins.index')->with('success', 'Admin updated successfully ✏️');
     }
-
-    /**
-     * حذف مدير
-     */
     public function destroy($id)
     {
         Admin::findOrFail($id)->delete();

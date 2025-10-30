@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->text('address')->nullable();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
-
             $table->foreign('customer_id')->references('id')->on('customers')->cascadeOnDelete();
             $table->index(['customer_id', 'is_default']);
         });

@@ -5,15 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Flory Admin')</title>
 
-    {{-- 🔹 Metronic CSS --}}
+    {{-- Metronic CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
-    /* ================================
-       🌿 FLORY DASHBOARD STYLE
-       ================================ */
+
 
     body {
         font-family: 'Inter', sans-serif;
@@ -23,7 +21,7 @@
         display: flex;
     }
 
-    /* 🔹 Sidebar */
+    /*  Sidebar */
     .sidebar,
     .aside,
     .aside-dark,
@@ -54,7 +52,7 @@
         display: none;
     }
 
-    /* 🔹 روابط السايدبار */
+    /* روابط السايدبار */
     .aside .nav-link,
     .sidebar .nav-link {
         color: #fff !important;
@@ -85,7 +83,7 @@
         font-size: 1.1rem;
     }
 
-    /* 🔹 المحتوى */
+    /* المحتوى */
     .content {
         margin-left: 250px;
         flex: 1;
@@ -161,7 +159,6 @@
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
 
-    {{-- ✅ إصلاح ألوان الأزرار بعد تحميل Metronic --}}
     <style>
     body {
       --bs-primary: #819067 !important;
@@ -175,7 +172,7 @@
       --bs-btn-focus-shadow-rgb: 129,144,103 !important;
     }
 
-    /* ✅ Primary */
+    /*  Primary */
     .btn-primary,
     .btn.btn-primary {
         background-color: #819067 !important;
@@ -199,7 +196,7 @@
         outline: none !important;
     }
 
-    /* ✅ Success */
+    /* Success */
     .btn-success {
         background-color: #7CB342 !important;
         border-color: #7CB342 !important;
@@ -213,7 +210,7 @@
         background-color: #689F38 !important;
     }
 
-    /* ✅ Warning */
+    /* Warning */
     .btn-warning {
         background-color: #F1C40F !important;
         border-color: #F1C40F !important;
@@ -227,7 +224,7 @@
         background-color: #D4AC0D !important;
     }
 
-    /* ✅ Danger */
+    /* Danger */
     .btn-danger {
         background-color: #E74C3C !important;
         border-color: #E74C3C !important;
@@ -241,7 +238,6 @@
         background-color: #C0392B !important;
     }
 
-    /* ✅ إزالة أي تأثير أزرق من Bootstrap/Metronic */
     .btn:focus,
     .btn:active,
     .btn:focus-visible {

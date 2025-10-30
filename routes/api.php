@@ -7,22 +7,12 @@ use App\Http\Controllers\Api\{
     ProductApiController,
     CategoryApiController,
     OrderApiController,
-    CustomerApiController,
     CouponApiController,
     NotificationApiController
 };
 
-/*
-|--------------------------------------------------------------------------
-| 🚀 Flory API Routes (for Flutter App)
-|--------------------------------------------------------------------------
-| كل هذه المسارات يتم استدعاؤها من تطبيق الموبايل.
-| - الحماية عبر Laravel Sanctum
-| - الردود كلها بصيغة JSON
-|---------------------------------------------------------------------------
-*/
 
-/* 🪪 مصادقة العملاء (Register / Login / Profile / Logout) */
+/* مصادقة العملاء (Register / Login / Profile / Logout) */
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthApiController::class, 'register']);
     Route::post('/login', [AuthApiController::class, 'login']);
@@ -48,36 +38,36 @@ Route::middleware('auth:sanctum')->prefix('addresses')->group(function () {
 });
 
 
-/* 🛍️ المنتجات */
+/*  المنتجات */
 Route::get('/products', [ProductApiController::class, 'index']);
 Route::get('/products/{id}', [ProductApiController::class, 'show']);
 
-/* 🏷️ التصنيفات */
+/*  التصنيفات */
 Route::get('/categories', [CategoryApiController::class, 'index']);
 Route::get('/categories/{id}', [CategoryApiController::class, 'show']);
 
 
-/* 📦 الطلبات (تتطلب تسجيل دخول) */
+/*  الطلبات (تتطلب تسجيل دخول) */
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // 🧾 عرض جميع الطلبات للمستخدم الحالي
+    //  عرض جميع الطلبات للمستخدم الحالي
     Route::get('/orders', [OrderApiController::class, 'index']);
 
-    // ➕ إنشاء طلب جديد
+    //  إنشاء طلب جديد
     Route::post('/orders', [OrderApiController::class, 'store']);
 
-    // ✏️ تعديل الطلب (مثل تغيير الحالة أو المجموع)
+    //  تعديل الطلب (مثل تغيير الحالة أو المجموع)
     Route::put('/orders/{id}', [OrderApiController::class, 'update']);
 
-    // 🗑️ حذف الطلب
+    //  حذف الطلب
     Route::delete('/orders/{id}', [OrderApiController::class, 'destroy']);
 });
-/* 🎟️ الكوبونات */
+/* الكوبونات */
 Route::get('/coupons', [CouponApiController::class, 'index']);
 Route::get('/coupons/{code}', [CouponApiController::class, 'validateCoupon']);
 
-/* 🔔 الإشعارات (للمستخدم المسجل فقط) */
+/*  الإشعارات (للمستخدم المسجل فقط) */
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationApiController::class, 'index']);
     Route::post('/notifications/send', [NotificationApiController::class, 'send']);
@@ -88,7 +78,7 @@ use App\Http\Controllers\Api\BannerApiController;
 Route::get('/banners', [BannerApiController::class, 'index']);
 
 
-/* 🧾 بيانات المستخدم الحالية (اختياري - للمطورين) */
+/* بيانات المستخدم الحالية */
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
         'status' => true,

@@ -10,7 +10,7 @@
         <p><b>Status:</b> {{ ucfirst($order->status) }}</p>
         <p><b>Total:</b> ${{ number_format($order->total, 2) }}</p>
 
-        {{-- 🏠 عرض عنوان التوصيل --}}
+        {{-- عرض عنوان التوصيل --}}
         @if($order->address)
             <div class="mt-3 p-3 border rounded bg-light">
                 <h6 class="mb-2">Delivery Address:</h6>

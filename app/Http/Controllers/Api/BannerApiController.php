@@ -7,7 +7,6 @@ use App\Models\Banner;
 
 class BannerApiController extends Controller
 {
-    // ✅ إرجاع البنرات المفعلة فقط (للـ Flutter App)
     public function index()
     {
         return response()->json([

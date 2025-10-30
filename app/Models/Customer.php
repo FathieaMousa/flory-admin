@@ -6,12 +6,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Sanctum\HasApiTokens; // ✅ أضيفي هذا السطر
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
 class Customer extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable; // ✅ أضيفي HasApiTokens هنا
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name', 'email', 'phone', 'password',
@@ -40,6 +40,7 @@ class Customer extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
 
     public function getDisplayNameAttribute()
     {

@@ -9,7 +9,7 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::firstOrCreate(); // ينشئ سجل افتراضي إذا مش موجود
+        $settings = Setting::firstOrCreate();
         return view('admin.settings.index', compact('settings'));
     }
 
@@ -26,7 +26,6 @@ class SettingController extends Controller
 
         $settings = Setting::first();
 
-        // ✅ حفظ الصور إن وُجدت
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('settings', 'public');
         }
@@ -37,6 +36,6 @@ class SettingController extends Controller
 
         $settings->update($data);
 
-        return back()->with('success', 'Settings updated successfully ✅');
+        return back()->with('success', 'Settings updated successfully');
     }
 }

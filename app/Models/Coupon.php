@@ -22,7 +22,7 @@ class Coupon extends Model
         'end_date' => 'datetime',
     ];
 
-    // 🔹 التحقق من صلاحية الكوبون
+    //التحقق من صلاحية الكوبون
     public function getIsValidAttribute()
     {
         return $this->is_active &&
